@@ -61,7 +61,7 @@ export default function App() {
         <Route
           path="/patient/appointments"
           element={protect(
-            <MainLayout pageTitle="My Appointments" pageSubtitle="Upcoming, history, and booking">
+            <MainLayout pageTitle="Appointments" pageSubtitle="Upcoming, history, and booking">
               <PatientAppointments />
             </MainLayout>
           )}

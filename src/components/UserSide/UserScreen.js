@@ -154,7 +154,7 @@ export default function UserScreen() {
               <Panel style={{ overflow: "hidden" }}>
                 <SectionHeader title="Next Appointment" action="View All" onClick={() => navigate("/patient/appointments")} />
                 {!nextAppointment ? (
-                  <EmptyState title="No upcoming appointment" detail="Book a consultation to start the clinic flow." />
+                  <EmptyState title="No upcoming appointments" detail="Book an appointment to start the clinic flow." />
                 ) : (
                   <div style={{ padding: 16, display: "grid", gap: 8 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>

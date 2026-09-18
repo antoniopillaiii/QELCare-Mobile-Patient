@@ -5,7 +5,7 @@ import NotificationBell from "./NotificationBell";
 
 const navItems = [
   { label: "Home", path: "/dashboard", icon: "⌂" },
-  { label: "Visits", path: "/patient/appointments", icon: "▣" },
+  { label: "Appointments", path: "/patient/appointments", icon: "▣" },
   { label: "Records", path: "/patient/records", icon: "▤" },
   { label: "Health", path: "/patient/health", icon: "✚" },
   { label: "Profile", path: "/patient/profile", icon: "●" },
@@ -282,8 +282,8 @@ const layoutCss = `
   min-height: 62px;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 4px;
-  padding: 7px;
+  gap: 2px;
+  padding: 7px 5px;
   border-radius: 22px;
   border: 1px solid rgba(210, 222, 236, .94);
   background: rgba(255,255,255,.96);
@@ -304,7 +304,7 @@ const layoutCss = `
   min-width: 0;
 }
 .bottom-link span { font-size: 15px; line-height: 1; }
-.bottom-link small { font-size: 10px; line-height: 1.1; }
+.bottom-link small { font-size: 9px; line-height: 1.1; letter-spacing: -0.1px; white-space: nowrap; }
 .bottom-link.active {
   color: #163a6b;
   background: #eaf1ff;
