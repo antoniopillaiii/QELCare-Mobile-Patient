@@ -10,8 +10,6 @@ import UserScreen from "./components/UserSide/UserScreen";
 import PatientAppointments from "./components/UserSide/PatientAppointments";
 import MedicalRecords from "./components/UserSide/MedicalRecords";
 import HealthRecords from "./components/UserSide/HealthRecords";
-import MedicationScreen from "./components/UserSide/MedicationScreen";
-import PatientResults from "./components/UserSide/PatientResults";
 import ProfileScreen from "./components/UserSide/ProfileScreen";
 import MainLayout from "./components/Layout/MainLayout";
 import PatientIdleTimeout from "./components/Auth/PatientIdleTimeout";
@@ -85,22 +83,11 @@ export default function App() {
             </MainLayout>
           )}
         />
-        <Route
-          path="/patient/medications"
-          element={protect(
-            <MainLayout pageTitle="My Medications" pageSubtitle="Prescriptions from completed medical records">
-              <MedicationScreen />
-            </MainLayout>
-          )}
-        />
-        <Route
-          path="/patient/results"
-          element={protect(
-            <MainLayout pageTitle="Medical Results" pageSubtitle="Upload personal lab papers and scan them with OCR">
-              <PatientResults />
-            </MainLayout>
-          )}
-        />
+        {/* Medications and lab-paper uploads were consolidated into Health Records
+            (its Medications + Documents tabs), mirroring the web app. Keep these
+            paths as redirects so any old link lands on the consolidated page. */}
+        <Route path="/patient/medications" element={<Navigate to="/patient/health" replace />} />
+        <Route path="/patient/results" element={<Navigate to="/patient/health" replace />} />
         <Route path="/patient/profile" element={protect(<ProfileScreen />)} />
 
         <Route path="*" element={<Navigate to="/redirect" replace />} />

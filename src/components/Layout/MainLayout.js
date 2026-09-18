@@ -7,8 +7,6 @@ const navItems = [
   { label: "Home", path: "/dashboard", icon: "⌂" },
   { label: "Visits", path: "/patient/appointments", icon: "▣" },
   { label: "Records", path: "/patient/records", icon: "▤" },
-  { label: "Results", path: "/patient/results", icon: "◉" },
-  { label: "Meds", path: "/patient/medications", icon: "Rx" },
   { label: "Health", path: "/patient/health", icon: "✚" },
   { label: "Profile", path: "/patient/profile", icon: "●" },
 ];
