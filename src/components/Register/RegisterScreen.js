@@ -1,22 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../../utils/auth";
-
-// --- Icons --------------------------------------------------------------------
-function PlusIcon()      { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>; }
-function ArrowLeftIcon() { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>; }
-function ArrowRightIcon(){ return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>; }
-function ShieldIcon()    { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l7 4v5c0 4.5-2.9 7.9-7 9-4.1-1.1-7-4.5-7-9V7l7-4z"/><path d="M9.5 12.2l1.8 1.8 3.7-4.2"/></svg>; }
-function EyeOpen()       { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/><circle cx="12" cy="12" r="3"/></svg>; }
-function EyeClosed()     { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3l18 18"/><path d="M10.6 10.7a2 2 0 0 0 2.7 2.7"/><path d="M9.4 5.1A11.2 11.2 0 0 1 12 5c6.5 0 10 7 10 7a15.8 15.8 0 0 1-4 4.7"/><path d="M6.6 6.7C3.9 8.5 2 12 2 12a15.8 15.8 0 0 0 10 7 10.7 10.7 0 0 0 4-.8"/></svg>; }
-function AlertIcon()     { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>; }
-function CheckIcon()     { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>; }
-function HomeIcon()      { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>; }
-function CalendarIcon()  { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>; }
-function PhoneIcon()     { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.23 19a19.45 19.45 0 0 1-6-6A19.79 19.79 0 0 1 2 4.11 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>; }
-function UserIcon()      { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>; }
-function MailIcon()      { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>; }
-function LockIcon()      { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V8a4 4 0 1 1 8 0v2"/></svg>; }
+import {
+  Plus as PlusIcon,
+  ArrowLeft as ArrowLeftIcon,
+  ArrowRight as ArrowRightIcon,
+  ShieldCheck as ShieldIcon,
+  Eye as EyeOpen,
+  EyeOff as EyeClosed,
+  CircleAlert as AlertIcon,
+  Check as CheckIcon,
+  Home as HomeIcon,
+  Calendar as CalendarIcon,
+  Phone as PhoneIcon,
+  User as UserIcon,
+  Mail as MailIcon,
+  Lock as LockIcon,
+  X as CloseIcon,
+} from "lucide-react";
 
 // --- Password strength --------------------------------------------------------
 const checkPw = (pw) => ({
@@ -87,8 +88,6 @@ const usernameHint   = (u) => {
 
 // --- Styles -------------------------------------------------------------------
 const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=DM+Serif+Display:ital@0;1&display=swap');
-
   :root {
     --navy: #0e2340; --navy-2: #163a6b; --navy-3: #1e4d8c;
     --blue: #2d6be4; --teal: #0e8a7a; --success: #059669;
@@ -96,8 +95,22 @@ const styles = `
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body, #root { height: 100%; overflow: hidden; }
-  body { font-family: 'DM Sans', system-ui, sans-serif; background: linear-gradient(135deg, #eef2fb 0%, #f4f7fc 60%, #eaf0f9 100%); }
+  body { font-family: 'Inter', system-ui, sans-serif; background: linear-gradient(135deg, #eef2fb 0%, #f4f7fc 60%, #eaf0f9 100%); }
   button, input, select { font: inherit; outline: none; border: none; }
+
+  /* Restore a clear keyboard focus ring for buttons, links, and checkboxes
+     (text inputs keep their own :focus ring below). */
+  a:focus-visible,
+  button:focus-visible,
+  input[type="checkbox"]:focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: .001ms !important; animation-duration: .001ms !important; }
+    .rg-btn-main:hover:not(:disabled), .rg-home-btn:hover, .rg-back:hover { transform: none; }
+  }
 
   .rg-page { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
   .rg-shell {
@@ -139,8 +152,8 @@ const styles = `
   .rg-eyebrow { display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:999px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15); font-size:.7rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; margin-bottom:16px; }
   .rg-eyebrow-dot { width:7px; height:7px; border-radius:50%; background:#5eead4; box-shadow:0 0 0 4px rgba(94,234,212,.18); }
 
-  .rg-brand h1 { font-family:'DM Serif Display',Georgia,serif; font-size:clamp(1.9rem,2.8vw,2.9rem); line-height:1.08; letter-spacing:-.02em; font-weight:400; margin-bottom:12px; }
-  .rg-brand h1 em { font-style:italic; color:rgba(255,255,255,.75); }
+  .rg-brand h1 { font-size:clamp(1.9rem,2.8vw,2.9rem); line-height:1.1; letter-spacing:-.03em; font-weight:800; margin-bottom:12px; }
+  .rg-brand h1 em { font-style:normal; color:rgba(255,255,255,.72); }
   .rg-brand-desc { color:rgba(255,255,255,.65); font-size:.86rem; line-height:1.68; max-width:380px; margin-bottom:26px; }
 
   .rg-highlights { display:grid; gap:10px; }
@@ -161,7 +174,7 @@ const styles = `
   .rg-back:hover { color:var(--blue); transform:translateX(-2px); }
 
   .rg-form-head { margin-bottom:12px; }
-  .rg-form-head h2 { font-family:'DM Serif Display',Georgia,serif; font-size:1.75rem; font-weight:400; letter-spacing:-.02em; color:var(--ink); margin-bottom:4px; }
+  .rg-form-head h2 { font-size:1.6rem; font-weight:800; letter-spacing:-.03em; color:var(--ink); margin-bottom:4px; }
   .rg-form-head p { color:var(--muted); font-size:.84rem; line-height:1.6; }
 
   /* Step bar */
@@ -202,13 +215,16 @@ const styles = `
   /* Password */
   .rg-pw-wrap { position:relative; }
   .rg-pw-wrap .rg-input { padding:0 46px 0 40px; }
-  .rg-eye { position:absolute; right:7px; top:50%; transform:translateY(-50%); width:32px; height:32px; background:transparent; border:none; border-radius:8px; color:#9ca3af; cursor:pointer; display:grid; place-items:center; transition:background .15s,color .15s; }
-  .rg-eye svg { width:15px; height:15px; }
+  .rg-eye { position:absolute; right:4px; top:3px; bottom:3px; width:42px; background:transparent; border:none; border-radius:9px; color:#9ca3af; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s,color .15s; z-index:5; padding:0; }
+  .rg-eye svg { width:17px; height:17px; display:block; pointer-events:none; }
   .rg-eye:hover { background:#f3f5f9; color:var(--ink-2); }
+  .rg-eye:active { background:#e9edf3; }
 
   /* PW checks */
   .rg-pw-checks { display:flex; flex-wrap:wrap; gap:4px; margin-top:7px; }
-  .rg-pw-check { padding:3px 8px; border-radius:999px; font-size:.69rem; font-weight:700; }
+  .rg-pw-check { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:999px; font-size:.69rem; font-weight:700; }
+  .rg-pw-check svg { width:11px; height:11px; }
+  .rg-pw-dot { width:6px; height:6px; border-radius:50%; background:#c4cdd9; flex-shrink:0; }
 
   /* Confirm match indicator */
   .rg-confirm-match { display:flex; align-items:center; gap:5px; margin-top:5px; font-size:.72rem; font-weight:700; padding-left:2px; }
@@ -294,6 +310,14 @@ export default function RegisterScreen() {
   const [showCPw,   setShowCPw]   = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [legalView, setLegalView] = useState(null); // "privacy" | "terms" | null
+
+  // Let keyboard users dismiss the legal modal with Escape.
+  useEffect(() => {
+    if (!legalView) return undefined;
+    const onKey = (e) => { if (e.key === "Escape") setLegalView(null); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [legalView]);
 
   // Name fields are normalized live: invalid characters are blocked and each word
   // is auto-capitalized ("kelly celocia" -> "Kelly Celocia") as the user types,
@@ -418,9 +442,9 @@ export default function RegisterScreen() {
             </div>
 
             <div className="rg-brand-body">
-              <div className="rg-eyebrow"><span className="rg-eyebrow-dot" />New Patient Registration</div>
-              <h1>Create your<br /><em>QELCare patient account.</em></h1>
-              <p className="rg-brand-desc">Register as a new patient to book appointments, access your records, and manage your health services online.</p>
+              <div className="rg-eyebrow"><span className="rg-eyebrow-dot" />New Patient Sign Up</div>
+              <h1>Sign up for your<br /><em>QELCare patient account.</em></h1>
+              <p className="rg-brand-desc">Sign up as a new patient to book appointments, access your records, and manage your health services online.</p>
               <div className="rg-highlights">
                 {HIGHLIGHTS.map(h => (
                   <div className="rg-highlight" key={h.title}>
@@ -447,7 +471,7 @@ export default function RegisterScreen() {
               </button>
 
               <div className="rg-form-head">
-                <h2>Create account</h2>
+                <h2>Sign up</h2>
                 <p>Step {step} of 3 - {STEPS[step - 1]}</p>
               </div>
 
@@ -469,7 +493,7 @@ export default function RegisterScreen() {
                 ))}
               </div>
 
-              <div className="rg-badge"><span className="rg-badge-dot" />Patient Registration</div>
+              <div className="rg-badge"><span className="rg-badge-dot" />Patient Sign Up</div>
 
               {error   && <div className="rg-alert rg-alert-error" role="alert"><AlertIcon />{error}</div>}
               {success && <div className="rg-alert rg-alert-success" role="status"><CheckIcon />{success}</div>}
@@ -594,7 +618,7 @@ export default function RegisterScreen() {
                       <p className={`rg-field-hint${uHint ? " rg-field-hint-err" : ""}`}>
                         {uHint
                           ? uHint
-                          : "OK Looks good! 3-30 characters, letters/numbers/_ . -"}
+                          : "Looks good — 3-30 characters, letters/numbers/_ . -"}
                       </p>
                     )}
                     {!form.username && (
@@ -630,7 +654,8 @@ export default function RegisterScreen() {
                             background: checks[key] ? "#eaf8f0" : "#f1f3f7",
                             color:      checks[key] ? "#059669" : "#9ba8bc",
                           }}>
-                            {checks[key] ? "OK" : ""} {label}
+                            {checks[key] ? <CheckIcon /> : <span className="rg-pw-dot" />}
+                            {label}
                           </span>
                         ))}
                       </div>
@@ -708,7 +733,7 @@ export default function RegisterScreen() {
                       className="rg-btn-main"
                       disabled={loading || !!success}
                     >
-                      {loading ? "Creating account..." : success ? "Done!" : "Create Account"}
+                      {loading ? "Signing up..." : success ? "Done!" : "Sign up"}
                     </button>
                   )}
                 </div>
@@ -733,18 +758,24 @@ export default function RegisterScreen() {
           style={{ position: "fixed", inset: 0, background: "rgba(8,18,33,.5)", display: "grid", placeItems: "center", padding: 16, zIndex: 100 }}
         >
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="rg-legal-title"
             onClick={e => e.stopPropagation()}
-            style={{ width: "min(560px, 96vw)", maxHeight: "86vh", overflowY: "auto", background: "#fff", borderRadius: 16, boxShadow: "0 24px 64px rgba(14,35,64,.28)" }}
+            style={{ width: "min(560px, 96vw)", maxHeight: "86vh", overflowY: "auto", background: "#fff", borderRadius: 16, boxShadow: "0 24px 64px rgba(14,35,64,.28)", fontFamily: "inherit" }}
           >
             <div style={{ position: "sticky", top: 0, background: "#fff", borderBottom: "1px solid #e8eef6", padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-              <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0e2340" }}>{LEGAL[legalView].title}</h3>
+              <h3 id="rg-legal-title" style={{ margin: 0, fontSize: 18, fontWeight: 900, color: "#0e2340", display: "flex", alignItems: "center", gap: 9 }}>
+                <span style={{ width: 32, height: 32, borderRadius: 9, background: "#eef4fb", color: "#163a6b", display: "grid", placeItems: "center", flexShrink: 0 }}><ShieldIcon size={17} /></span>
+                {LEGAL[legalView].title}
+              </h3>
               <button
                 type="button"
                 onClick={() => setLegalView(null)}
                 aria-label="Close"
-                style={{ border: 0, background: "#eef4fb", color: "#163a6b", width: 34, height: 34, borderRadius: 10, fontSize: 18, fontWeight: 900, cursor: "pointer" }}
+                style={{ border: 0, background: "#eef4fb", color: "#163a6b", width: 34, height: 34, borderRadius: 10, cursor: "pointer", display: "grid", placeItems: "center", flexShrink: 0 }}
               >
-                ×
+                <CloseIcon size={18} />
               </button>
             </div>
             <div style={{ padding: "16px 20px 22px" }}>

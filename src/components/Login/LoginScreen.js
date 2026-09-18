@@ -1,22 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { saveLoginData, API_URL, consumeSessionExpired } from "../../utils/auth";
-
-// """ Icons """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function PlusIcon()     { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>; }
-function UserIcon()     { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>; }
-function LockIcon()     { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V8a4 4 0 1 1 8 0v2"/></svg>; }
-function EyeOpen()      { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/><circle cx="12" cy="12" r="3"/></svg>; }
-function EyeClosed()    { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3l18 18"/><path d="M10.6 10.7a2 2 0 0 0 2.7 2.7"/><path d="M9.4 5.1A11.2 11.2 0 0 1 12 5c6.5 0 10 7 10 7a15.8 15.8 0 0 1-4 4.7"/><path d="M6.6 6.7C3.9 8.5 2 12 2 12a15.8 15.8 0 0 0 10 7 10.7 10.7 0 0 0 4-.8"/></svg>; }
-function UserPlusIcon() { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M16 11h6"/></svg>; }
-function ShieldIcon()   { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l7 4v5c0 4.5-2.9 7.9-7 9-4.1-1.1-7-4.5-7-9V7l7-4z"/><path d="M9.5 12.2l1.8 1.8 3.7-4.2"/></svg>; }
-function KeyIcon()      { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="15" r="5"/><path d="M13 9l7.5-7.5M17 5l2 2"/></svg>; }
-function GridIcon()     { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>; }
-function AlertIcon()    { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>; }
-function CheckIcon()    { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>; }
-function HomeIcon()     { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>; }
-function WarnIcon()     { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>; }
-function ClockIcon()    { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>; }
+import {
+  Plus as PlusIcon,
+  User as UserIcon,
+  Lock as LockIcon,
+  Eye as EyeOpen,
+  EyeOff as EyeClosed,
+  UserPlus as UserPlusIcon,
+  ShieldCheck as ShieldIcon,
+  KeyRound as KeyIcon,
+  LayoutGrid as GridIcon,
+  CircleAlert as AlertIcon,
+  Check as CheckIcon,
+  Home as HomeIcon,
+  TriangleAlert as WarnIcon,
+  Clock as ClockIcon,
+} from "lucide-react";
 
 const ROLE_REDIRECT = {
   Patient: "/dashboard",
@@ -54,8 +54,6 @@ function LockoutCountdown({ until, onExpired }) {
 
 // """ Styles """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=DM+Serif+Display:ital@0;1&display=swap');
-
   :root {
     --navy:   #0e2340;
     --navy-2: #163a6b;
@@ -73,8 +71,22 @@ const styles = `
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body, #root { height: 100%; overflow: hidden; }
-  body { font-family: 'DM Sans', system-ui, sans-serif; background: linear-gradient(135deg, #eef2fb 0%, #f4f7fc 60%, #eaf0f9 100%); }
+  body { font-family: 'Inter', system-ui, sans-serif; background: linear-gradient(135deg, #eef2fb 0%, #f4f7fc 60%, #eaf0f9 100%); }
   button, input { font: inherit; outline: none; }
+
+  /* Restore a clear keyboard focus ring for buttons, links, and checkboxes
+     (text inputs keep their own :focus ring below). */
+  a:focus-visible,
+  button:focus-visible,
+  input[type="checkbox"]:focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: .001ms !important; animation-duration: .001ms !important; }
+    .ls-btn:hover:not(:disabled), .ls-patient-btn:hover, .ls-home-btn:hover { transform: none; }
+  }
 
   /* "" Page "" */
   .ls-page { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
@@ -132,8 +144,8 @@ const styles = `
   }
   .ls-eyebrow-dot { width: 7px; height: 7px; border-radius: 50%; background: #5eead4; box-shadow: 0 0 0 4px rgba(94,234,212,.18); }
 
-  .ls-brand h1 { font-family: 'DM Serif Display', Georgia, serif; font-size: clamp(1.9rem, 2.8vw, 2.9rem); line-height: 1.08; letter-spacing: -.02em; font-weight: 400; margin-bottom: 12px; }
-  .ls-brand h1 em { font-style: italic; color: rgba(255,255,255,.75); }
+  .ls-brand h1 { font-size: clamp(1.9rem, 2.8vw, 2.9rem); line-height: 1.1; letter-spacing: -.03em; font-weight: 800; margin-bottom: 12px; }
+  .ls-brand h1 em { font-style: normal; color: rgba(255,255,255,.72); }
   .ls-brand-desc { color: rgba(255,255,255,.65); font-size: .86rem; line-height: 1.68; max-width: 380px; margin-bottom: 26px; }
 
   .ls-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -152,7 +164,7 @@ const styles = `
   .ls-form-inner { width: 100%; max-width: 360px; }
 
   .ls-form-head { margin-bottom: 20px; }
-  .ls-form-head h2 { font-family: 'DM Serif Display', Georgia, serif; font-size: 1.85rem; font-weight: 400; letter-spacing: -.02em; color: var(--ink); margin-bottom: 5px; }
+  .ls-form-head h2 { font-size: 1.7rem; font-weight: 800; letter-spacing: -.03em; color: var(--ink); margin-bottom: 5px; }
   .ls-form-head p { color: var(--muted); font-size: .84rem; line-height: 1.6; }
 
   .ls-badge { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 999px; background: #f0fdf9; border: 1px solid #bbf0de; color: var(--teal); font-size: .74rem; font-weight: 700; margin-bottom: 18px; }
@@ -189,13 +201,14 @@ const styles = `
   .ls-input-error { border-color: #fca5a5 !important; background: #fff8f8 !important; }
 
   .ls-toggle {
-    position: absolute; right: 7px; top: 50%; transform: translateY(-50%);
-    width: 32px; height: 32px; background: transparent; border-radius: 8px;
-    color: #9ca3af; cursor: pointer; display: grid; place-items: center;
-    transition: background .15s, color .15s; border: none;
+    position: absolute; right: 4px; top: 3px; bottom: 3px;
+    width: 42px; background: transparent; border-radius: 9px;
+    color: #9ca3af; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background .15s, color .15s; border: none; z-index: 5; padding: 0;
   }
-  .ls-toggle svg { width: 16px; height: 16px; }
+  .ls-toggle svg { width: 18px; height: 18px; display: block; pointer-events: none; }
   .ls-toggle:hover { background: #f3f5f9; color: var(--ink-2); }
+  .ls-toggle:active { background: #e9edf3; }
 
   /* Remember me + forgot */
   .ls-row-meta { display: flex; align-items: center; justify-content: space-between; margin: -2px 0 16px; }
@@ -347,7 +360,7 @@ export default function LoginScreen() {
         localStorage.removeItem("qelcare_remembered_user");
       }
       saveLoginData(data.token, data.user);
-      setSuccess("Login successful! Redirecting...");
+      setSuccess("Signed in successfully! Redirecting...");
       setTimeout(() => navigate(ROLE_REDIRECT[data.user.role] || "/dashboard"), 800);
     } catch {
       setError("Cannot connect to server. Please try again.");
@@ -514,7 +527,6 @@ export default function LoginScreen() {
                     type="button"
                     onClick={() => setShowPass(v => !v)}
                     aria-label={showPass ? "Hide password" : "Show password"}
-                    tabIndex={-1}
                   >
                     {showPass ? <EyeClosed /> : <EyeOpen />}
                   </button>
