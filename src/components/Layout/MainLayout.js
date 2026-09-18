@@ -76,7 +76,7 @@ export default function MainLayout({ children, pageTitle = "QELCare Patient", pa
           ))}
         </nav>
 
-        <button type="button" className="logout-button" onClick={logout}>Logout</button>
+        <button type="button" className="logout-button" onClick={logout}>Sign Out</button>
       </aside>
 
       {drawerOpen && <button type="button" className="drawer-backdrop" aria-label="Close navigation" onClick={() => setDrawerOpen(false)} />}

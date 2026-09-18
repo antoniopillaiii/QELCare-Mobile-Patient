@@ -72,7 +72,7 @@ export default function App() {
         <Route
           path="/patient/records"
           element={protect(
-            <MainLayout pageTitle="My Records" pageSubtitle="Read-only doctor-created consultation records">
+            <MainLayout pageTitle="Consultation Records" pageSubtitle="Read-only doctor-created consultation records">
               <MedicalRecords />
             </MainLayout>
           )}
