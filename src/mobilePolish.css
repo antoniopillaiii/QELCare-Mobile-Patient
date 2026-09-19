@@ -1,0 +1,114 @@
+/* ============================================================
+   FILE: src/mobilePolish.css
+   ------------------------------------------------------------
+   The patient app's counterpart to the website's
+   components/Layout/adminPolish.css, so both platforms feel like
+   one product: same transitions, same focus ring, same scrollbar,
+   same reduced-motion behaviour.
+
+   Rules are intentionally additive — they only set properties the
+   per-screen inline styles leave unset (box-shadow on focus,
+   transform on press, transitions) — so they enhance every screen
+   without overriding layout or colors. No structural or
+   behavioural changes.
+   ============================================================ */
+
+/* Smooth, tactile controls everywhere (matches the website). */
+button,
+input,
+select,
+textarea,
+a[role="button"] {
+  transition: filter 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease,
+    transform 0.08s ease, background-color 0.15s ease;
+}
+
+/* Press feedback. On touch there is no hover, so only the active
+   state is used — a hover filter would "stick" after a tap on
+   mobile browsers/webviews. */
+button:not(:disabled):active {
+  transform: translateY(1px);
+}
+
+/* Remove the blue/grey tap flash so the press feedback above is the
+   only visible response, and stop long-press text selection on
+   controls (it makes tapping buttons feel broken in a webview). */
+button,
+a,
+.drawer-link,
+.bottom-link,
+.notif-item {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* Text inputs must stay selectable. */
+input,
+textarea {
+  user-select: text;
+}
+
+/* Accessible focus ring, same values as the website. Uses box-shadow
+   (not set inline on form controls) so it shows even where inline
+   styles set `outline: none`. Matters for external keyboards and
+   switch-access users on Android. */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  box-shadow: 0 0 0 3px rgba(22, 58, 107, 0.18);
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid rgba(22, 58, 107, 0.45);
+  outline-offset: 2px;
+}
+
+/* Refined scrollbars for the scrollable panes (records, documents,
+   notification list). Mostly visible in the desktop preview build. */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: #c7d4e3;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #aebfd3;
+  background-clip: content-box;
+}
+
+* {
+  scrollbar-color: #c7d4e3 transparent;
+  scrollbar-width: thin;
+}
+
+/* Crisper text rendering. */
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Respect the OS "reduce motion" setting, matching the sign-in screen
+   and the website. Focus rings and colors are left untouched so
+   nothing becomes less visible. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  button:not(:disabled):active {
+    transform: none;
+  }
+}

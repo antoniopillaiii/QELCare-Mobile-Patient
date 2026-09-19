@@ -1,17 +1,21 @@
 import React, { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { CalendarDays, FileText, HeartPulse, Home, LogOut, Menu, User } from "lucide-react";
 import { logout } from "../../utils/auth";
 import NotificationBell from "./NotificationBell";
 
 // `label` is the full name shown in the drawer + page headings — it matches the
 // website's menu wording so both platforms use one vocabulary. `short` is the
 // compact version for the 5-item bottom tab bar, where long text would overflow.
+// `Icon` is a Lucide component, matching the sign-in/register screens and the
+// website's icon language. These used to be typographic glyphs (⌂ ▣ ▤ ✚ ●),
+// which rendered differently on every device and read as placeholders.
 const navItems = [
-  { label: "Dashboard", short: "Home", path: "/dashboard", icon: "⌂" },
-  { label: "Appointments", short: "Appointments", path: "/patient/appointments", icon: "▣" },
-  { label: "Consultation Records", short: "Records", path: "/patient/records", icon: "▤" },
-  { label: "Health Records", short: "Health", path: "/patient/health", icon: "✚" },
-  { label: "Profile Settings", short: "Profile", path: "/patient/profile", icon: "●" },
+  { label: "Dashboard", short: "Home", path: "/dashboard", Icon: Home },
+  { label: "Appointments", short: "Appointments", path: "/patient/appointments", Icon: CalendarDays },
+  { label: "Consultation Records", short: "Records", path: "/patient/records", Icon: FileText },
+  { label: "Health Records", short: "Health", path: "/patient/health", Icon: HeartPulse },
+  { label: "Profile Settings", short: "Profile", path: "/patient/profile", Icon: User },
 ];
 
 function getStoredUser() {
@@ -71,20 +75,25 @@ export default function MainLayout({ children, pageTitle = "QELCare Patient", pa
               className={`drawer-link ${isActive(location.pathname, item.path) ? "active" : ""}`}
               onClick={() => go(item.path)}
             >
-              <span className="nav-icon">{item.icon}</span>
+              <span className="nav-icon"><item.Icon size={17} strokeWidth={2} aria-hidden="true" /></span>
               <span>{item.label}</span>
             </button>
           ))}
         </nav>
 
-        <button type="button" className="logout-button" onClick={logout}>Sign Out</button>
+        <button type="button" className="logout-button" onClick={logout}>
+          <LogOut size={17} strokeWidth={2} aria-hidden="true" />
+          <span>Sign Out</span>
+        </button>
       </aside>
 
       {drawerOpen && <button type="button" className="drawer-backdrop" aria-label="Close navigation" onClick={() => setDrawerOpen(false)} />}
 
       <div className="patient-main">
         <header className="patient-topbar">
-          <button type="button" className="menu-button" onClick={() => setDrawerOpen(true)} aria-label="Open navigation">☰</button>
+          <button type="button" className="menu-button" onClick={() => setDrawerOpen(true)} aria-label="Open navigation">
+            <Menu size={20} strokeWidth={2.2} aria-hidden="true" />
+          </button>
           <div className="topbar-title-wrap">
             <h1>{pageTitle}</h1>
             <p>{pageSubtitle}</p>
@@ -106,8 +115,9 @@ export default function MainLayout({ children, pageTitle = "QELCare Patient", pa
               type="button"
               className={`bottom-link ${isActive(location.pathname, item.path) ? "active" : ""}`}
               onClick={() => go(item.path)}
+              aria-current={isActive(location.pathname, item.path) ? "page" : undefined}
             >
-              <span>{item.icon}</span>
+              <span><item.Icon size={19} strokeWidth={2.1} aria-hidden="true" /></span>
               <small>{item.short || item.label}</small>
             </button>
           ))}
@@ -211,6 +221,7 @@ const layoutCss = `
 }
 .logout-button {
   justify-content: center;
+  gap: 8px;
   background: rgba(255, 112, 112, .14);
   color: #ffb3b3;
 }
@@ -245,6 +256,10 @@ const layoutCss = `
   font: inherit;
   font-weight: 950;
   cursor: pointer;
+  /* Centres the Lucide glyph in the menu button and the initials in the
+     avatar button (previously both relied on text baseline alignment). */
+  display: grid;
+  place-items: center;
 }
 .avatar-button {
   background: linear-gradient(135deg, #163a6b, #0e8a7a);
@@ -306,7 +321,7 @@ const layoutCss = `
   cursor: pointer;
   min-width: 0;
 }
-.bottom-link span { font-size: 15px; line-height: 1; }
+.bottom-link span { display: grid; place-items: center; line-height: 1; }
 .bottom-link small { font-size: 9px; line-height: 1.1; letter-spacing: -0.1px; white-space: nowrap; }
 .bottom-link.active {
   color: #163a6b;

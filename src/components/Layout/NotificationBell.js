@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Bell, X } from "lucide-react";
 import { authFetch } from "../../utils/auth";
 
 // Mirrors the website's Topbar notification bell (features/notification API:
@@ -125,10 +126,7 @@ export default function NotificationBell() {
         onClick={() => { setOpen(true); load(true); }}
         aria-label={`Notifications${unread ? ` (${unread} unread)` : ""}`}
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
-          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-        </svg>
+        <Bell size={20} strokeWidth={2} aria-hidden="true" />
         {unread > 0 && <span className="notif-badge">{unread > 9 ? "9+" : unread}</span>}
       </button>
 
@@ -142,7 +140,9 @@ export default function NotificationBell() {
               </div>
               <div className="notif-head-actions">
                 <button type="button" onClick={markAllRead} disabled={unread === 0}>Read all</button>
-                <button type="button" className="notif-close" onClick={() => setOpen(false)} aria-label="Close">✕</button>
+                <button type="button" className="notif-close" onClick={() => setOpen(false)} aria-label="Close">
+                  <X size={15} strokeWidth={2.4} aria-hidden="true" />
+                </button>
               </div>
             </div>
 
@@ -216,7 +216,7 @@ export default function NotificationBell() {
   font-family: inherit;
 }
 .notif-head-actions button:disabled { opacity: .5; }
-.notif-close { width: 34px; padding: 0 !important; font-size: 14px; }
+.notif-close { width: 34px; padding: 0 !important; display: grid; place-items: center; }
 .notif-error {
   margin: 10px 14px; padding: 8px 10px; border-radius: 8px;
   background: #fff6e5; color: #8a5a12; font-size: 12px; font-weight: 700;
