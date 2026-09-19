@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1073699057747",
+    "project_id": "qelcare",
+    "storage_bucket": "qelcare.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1073699057747:android:5942c8af453ba7c9ea56a6",
+        "android_client_info": {
+          "package_name": "com.qelcare.patient"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-WgCBhQUGi8px0qMBoIp7UbkrM7zVudM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

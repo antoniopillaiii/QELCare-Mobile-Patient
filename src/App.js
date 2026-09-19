@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import LoginScreen from "./components/Login/LoginScreen";
@@ -15,6 +15,7 @@ import MainLayout from "./components/Layout/MainLayout";
 import PatientIdleTimeout from "./components/Auth/PatientIdleTimeout";
 
 import { getUserRole, isAuthenticated } from "./utils/auth";
+import { initPush } from "./utils/push";
 
 function ProtectedPatientRoute({ children }) {
   if (!isAuthenticated()) return <Navigate to="/login" replace />;
@@ -44,6 +45,13 @@ function Unauthorized() {
 const protect = (element) => <ProtectedPatientRoute>{element}</ProtectedPatientRoute>;
 
 export default function App() {
+  // On app start, if there's already a patient session, (re)register this device
+  // for push. Fresh logins call initPush() again from LoginScreen. Safe no-op on
+  // web and when already registered.
+  useEffect(() => {
+    if (isAuthenticated()) initPush();
+  }, []);
+
   return (
     <HashRouter>
       {/* Patient inactivity auto-logout (whole app is patient-only). */}

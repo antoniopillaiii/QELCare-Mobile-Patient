@@ -68,12 +68,19 @@ export default function NotificationBell() {
   }, []);
 
   // Poll quietly while the app tab is visible, matching the website's 60s cadence.
+  // Also refresh immediately when a push arrives in the foreground (utils/push.js
+  // dispatches this event, since the OS won't show a tray notification then).
   useEffect(() => {
     load();
     const timer = setInterval(() => {
       if (typeof document === "undefined" || document.visibilityState === "visible") load(true);
     }, 60000);
-    return () => clearInterval(timer);
+    const onPush = () => load(true);
+    window.addEventListener("qelcare:refresh-notifications", onPush);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("qelcare:refresh-notifications", onPush);
+    };
   }, [load]);
 
   async function openItem(item) {

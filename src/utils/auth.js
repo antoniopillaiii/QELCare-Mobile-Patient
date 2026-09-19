@@ -49,12 +49,35 @@ export const PATIENT_IDLE_LIMIT_MS = 15 * 60 * 1000; // 15 minutes of inactivity
 export const LAST_ACTIVITY_KEY = "qelcare_last_activity";
 const SESSION_EXPIRED_KEY = "qelcare_session_expired";
 
+// Where utils/push.js stores the current FCM device token so we can drop it
+// server-side on logout (kept here to avoid a circular import with push.js).
+export const FCM_TOKEN_KEY = "fcm_token";
+
 export const isPatientSession = () => isAuthenticated() && getUserRole() === "Patient";
+
+// Best-effort: tell the backend to stop pushing to this device. Must run BEFORE
+// localStorage is cleared (needs both the auth token and the stored FCM token).
+const deregisterPushToken = async () => {
+  try {
+    const fcmToken = localStorage.getItem(FCM_TOKEN_KEY);
+    const token = getToken();
+    if (fcmToken && token) {
+      await fetch(`${API_URL}/notifications/device-token`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ token: fcmToken }),
+      });
+    }
+  } catch {
+    /* ignore network errors — we still clear locally */
+  }
+};
 
 // Auto-logout on inactivity: best-effort server revoke, clear local state, flag the
 // login screen, and return to #/login.
 export const expireSession = async () => {
   const token = getToken();
+  await deregisterPushToken();
   try {
     if (token) {
       await fetch(`${API_URL}/auth/logout`, {
@@ -85,6 +108,7 @@ function goLogin() {
 export const logout = async () => {
   try {
     const token = getToken();
+    await deregisterPushToken();
     if (token) {
       await fetch(`${API_URL}/auth/logout`, {
         method: "POST",

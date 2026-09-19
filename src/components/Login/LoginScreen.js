@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { saveLoginData, API_URL, consumeSessionExpired } from "../../utils/auth";
+import { initPush } from "../../utils/push";
 import {
   Plus as PlusIcon,
   User as UserIcon,
@@ -360,6 +361,8 @@ export default function LoginScreen() {
         localStorage.removeItem("qelcare_remembered_user");
       }
       saveLoginData(data.token, data.user);
+      // Register this device for push now that we have a session (native only).
+      initPush();
       setSuccess("Signed in successfully! Redirecting...");
       setTimeout(() => navigate(ROLE_REDIRECT[data.user.role] || "/dashboard"), 800);
     } catch {

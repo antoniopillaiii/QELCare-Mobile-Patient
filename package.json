@@ -9,6 +9,7 @@
     "@capacitor/app": "^8.1.0",
     "@capacitor/core": "^8.4.0",
     "@capacitor/ios": "^8.4.0",
+    "@capacitor/push-notifications": "^8.1.2",
     "baseline-browser-mapping": "^2.10.35",
     "lucide-react": "^1.46.0",
     "pdfjs-dist": "^3.11.174",
