@@ -304,7 +304,7 @@ function DocumentsTab() {
               Upload personal copies of lab results, X-rays, prescriptions, and other medical papers. AI Vision reads the text and detects the document type. This is your personal tracker, not an official clinic submission.
             </div>
           </div>
-          <ActionButton onClick={startNew}>New Document</ActionButton>
+          <ActionButton onClick={startNew}>Add Document</ActionButton>
         </div>
       </Panel>
 
@@ -351,7 +351,7 @@ function DocumentsTab() {
 
         <Panel style={{ padding: 16 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
-            <div style={{ fontSize: 16, fontWeight: 900, color: "#162235" }}>{selected ? "Edit Document" : "Upload Document"}</div>
+            <div style={{ fontSize: 16, fontWeight: 900, color: "#162235" }}>{selected ? "Edit Document" : "Add Document"}</div>
             {ocrBusy && <div style={{ color: "#163a6b", fontWeight: 900, fontSize: 13 }}>Reading...</div>}
           </div>
 

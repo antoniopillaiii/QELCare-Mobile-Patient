@@ -3,12 +3,15 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { logout } from "../../utils/auth";
 import NotificationBell from "./NotificationBell";
 
+// `label` is the full name shown in the drawer + page headings — it matches the
+// website's menu wording so both platforms use one vocabulary. `short` is the
+// compact version for the 5-item bottom tab bar, where long text would overflow.
 const navItems = [
-  { label: "Home", path: "/dashboard", icon: "⌂" },
-  { label: "Appointments", path: "/patient/appointments", icon: "▣" },
-  { label: "Records", path: "/patient/records", icon: "▤" },
-  { label: "Health", path: "/patient/health", icon: "✚" },
-  { label: "Profile", path: "/patient/profile", icon: "●" },
+  { label: "Dashboard", short: "Home", path: "/dashboard", icon: "⌂" },
+  { label: "Appointments", short: "Appointments", path: "/patient/appointments", icon: "▣" },
+  { label: "Consultation Records", short: "Records", path: "/patient/records", icon: "▤" },
+  { label: "Health Records", short: "Health", path: "/patient/health", icon: "✚" },
+  { label: "Profile Settings", short: "Profile", path: "/patient/profile", icon: "●" },
 ];
 
 function getStoredUser() {
@@ -105,7 +108,7 @@ export default function MainLayout({ children, pageTitle = "QELCare Patient", pa
               onClick={() => go(item.path)}
             >
               <span>{item.icon}</span>
-              <small>{item.label}</small>
+              <small>{item.short || item.label}</small>
             </button>
           ))}
         </nav>
