@@ -83,7 +83,9 @@ TEXTBELT_API_KEY=textbelt          # public free key = 1 SMS/day
 ```
 SMS_PROVIDER=semaphore
 SEMAPHORE_API_KEY=<your key>
-SMS_SENDER=QELCare
+# SMS_SENDER=QELCare   # OPTIONAL — only if you've REGISTERED this sender name in
+                       # Semaphore. Leave it OUT to use Semaphore's default sender
+                       # (works immediately). An unregistered name makes sends fail.
 ```
 
 **Twilio** (global; trial credits):
@@ -102,3 +104,35 @@ is never blocked.
 > `console` and TextBelt's 1/day are perfect for demos/testing; sustained live
 > SMS (many OTPs, every appointment) needs a paid gateway (Semaphore recommended
 > locally).
+
+### "SMS service is not configured. Use email instead." — why you see this
+
+This is **expected**, not a bug. It appears when the backend has **no SMS gateway
+configured AND the console fallback is off** — which is exactly the case on the
+**production (Railway)** backend, because there `NODE_ENV=production` turns the
+dev console fallback off. Instead of silently pretending to send (the console
+fallback only prints to server logs, which a real user can't see), the backend
+honestly refuses and tells the user to use email.
+
+Getting past the phone check to this message also confirms the account **has a
+mobile number on file** (otherwise you'd see "No mobile number on file for SMS").
+
+**To make SMS actually deliver in production:** set an `SMS_PROVIDER` + its key in
+**Railway → Variables** (not the local `.env`), then redeploy. Recommended:
+Semaphore (`SMS_PROVIDER=semaphore` + `SEMAPHORE_API_KEY` + `SMS_SENDER`).
+
+> Where do the vars go? **Railway only** for the live site/app (both share the
+> Railway backend). The local `qelcare-backend/.env` is only for running the
+> backend on your own PC, and it's gitignored so it never reaches production.
+> Setting `SMS_DEV_FALLBACK=true` on Railway would make the button "succeed" and
+> log the code to the Railway logs — useful only for a controlled demo, never for
+> real users.
+
+### SMS appointment alerts are limited to key events
+
+To save gateway credits, appointment **SMS** is sent only for the key patient
+events — **confirm / cancel / reschedule** (`SMS_STATUSES` in
+`appointmentController.js` = CONFIRMED, IN_QUEUE, CANCELLED, RESCHEDULED; IN_QUEUE
+is the same-day-confirm variant). Booking (PENDING), NO_SHOW, and COMPLETED do
+**not** text. In-app notifications, email, and push still fire on every event
+(those are free).
