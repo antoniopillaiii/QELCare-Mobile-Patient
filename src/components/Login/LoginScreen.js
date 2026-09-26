@@ -17,6 +17,7 @@ import {
   Home as HomeIcon,
   TriangleAlert as WarnIcon,
   Clock as ClockIcon,
+  Info as InfoIcon,
 } from "lucide-react";
 
 const ROLE_REDIRECT = {
@@ -30,7 +31,8 @@ const FEATURES = [
 ];
 
 // """ Lockout Countdown """"""""""""""""""""""""""""""""""""""""""""""""""""""""
-function LockoutCountdown({ until, onExpired }) {
+// Display only — LoginScreen owns the timer that actually unlocks the form.
+function LockoutCountdown({ until }) {
   const [remaining, setRemaining] = useState(0);
 
   useEffect(() => {
@@ -39,10 +41,10 @@ function LockoutCountdown({ until, onExpired }) {
     const id = setInterval(() => {
       const r = calc();
       setRemaining(r);
-      if (r === 0) { clearInterval(id); onExpired?.(); }
+      if (r === 0) clearInterval(id);
     }, 1000);
     return () => clearInterval(id);
-  }, [until, onExpired]);
+  }, [until]);
 
   const m = Math.floor(remaining / 60);
   const s = remaining % 60;
@@ -178,6 +180,7 @@ const styles = `
   .ls-alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; }
   .ls-alert-warn    { background: var(--warn-bg); border: 1px solid var(--warn-bd); color: var(--warn); }
   .ls-alert-lock    { background: #faf5ff; border: 1px solid #ddd6fe; color: #6d28d9; }
+  .ls-alert-info    { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e4d8c; }
 
   /* Attempts bar */
   .ls-attempts { margin-top: -6px; margin-bottom: 10px; }
@@ -257,6 +260,7 @@ const styles = `
 export default function LoginScreen() {
   const navigate = useNavigate();
   const usernameRef = useRef(null);
+  const passwordRef = useRef(null);
 
   const [username,     setUsername]     = useState("");
   const [password,     setPassword]     = useState("");
@@ -264,6 +268,8 @@ export default function LoginScreen() {
   const [rememberMe,   setRememberMe]   = useState(false);
   const [error,        setError]        = useState("");
   const [errorType,    setErrorType]    = useState("error"); // "error" | "warn" | "lock"
+  const [errorField,   setErrorField]   = useState(null);    // "username" | "password" | null
+  const [notice,       setNotice]       = useState("");
   const [success,      setSuccess]      = useState("");
   const [loading,      setLoading]      = useState(false);
   const [attemptsLeft, setAttemptsLeft] = useState(null); // 1-4 = warning
@@ -284,12 +290,35 @@ export default function LoginScreen() {
     }
   }, []);
 
-  const clearFeedback = () => { setError(""); setErrorType("error"); setAttemptsLeft(null); };
+  // Unlock the form when the lockout ends. This lives here rather than in the
+  // countdown, so editing a field (which used to clear the alert and its timer)
+  // can never leave the form locked after the lockout has expired.
+  useEffect(() => {
+    if (!lockoutUntil) return undefined;
+    const unlock = () => {
+      setIsLocked(false);
+      setLockoutUntil(null);
+      setError("");
+      setErrorType("error");
+      setAttemptsLeft(null);
+    };
+    const remaining = new Date(lockoutUntil).getTime() - Date.now();
+    if (!(remaining > 0)) { unlock(); return undefined; }
+    const id = setTimeout(unlock, remaining);
+    return () => clearTimeout(id);
+  }, [lockoutUntil]);
+
+  // While locked, keep the lockout alert and its countdown on screen.
+  const clearFeedback = () => {
+    setNotice("");
+    if (isLocked) return;
+    setError(""); setErrorType("error"); setErrorField(null); setAttemptsLeft(null);
+  };
 
   const handleLogin = async () => {
     if (loading) return;
-    if (!username.trim()) { setError("Please enter your username."); setErrorType("error"); return; }
-    if (!password.trim()) { setError("Please enter your password."); setErrorType("error"); return; }
+    if (!username.trim()) { setNotice(""); setError("Please enter your username."); setErrorType("error"); setErrorField("username"); return; }
+    if (!password.trim()) { setNotice(""); setError("Please enter your password."); setErrorType("error"); setErrorField("password"); return; }
     if (isLocked) return;
 
     setLoading(true); clearFeedback(); setSuccess("");
@@ -373,7 +402,14 @@ export default function LoginScreen() {
   };
 
   const handleKey = (e) => { if (e.key === "Enter") handleLogin(); };
-  const focusUsername = () => usernameRef.current?.focus();
+
+  // "Existing Patient" is a shortcut into the sign-in form above (returning
+  // patients sign in here). Say so, and put the cursor where they type next.
+  const startExistingPatient = () => {
+    clearFeedback();
+    setNotice("Welcome back! Sign in with your username and password.");
+    (username.trim() ? passwordRef : usernameRef).current?.focus();
+  };
 
   // Attempts bar: 5 max before first lock
   const attemptsBarWidth = attemptsLeft != null ? `${((5 - attemptsLeft) / 5) * 100}%` : "0%";
@@ -460,13 +496,15 @@ export default function LoginScreen() {
                     {error}
                     {errorType === "lock" && lockoutUntil && (
                       <> &mdash; unlocks in{" "}
-                        <LockoutCountdown
-                          until={lockoutUntil}
-                          onExpired={() => { setIsLocked(false); setLockoutUntil(null); clearFeedback(); }}
-                        />
+                        <LockoutCountdown until={lockoutUntil} />
                       </>
                     )}
                   </span>
+                </div>
+              )}
+              {notice && !error && !success && (
+                <div className="ls-alert ls-alert-info" role="status" aria-live="polite">
+                  <InfoIcon />{notice}
                 </div>
               )}
               {success && (
@@ -495,7 +533,8 @@ export default function LoginScreen() {
                   <input
                     id="qelcare-username"
                     ref={usernameRef}
-                    className={`ls-input${error && errorType === "error" && !password ? " ls-input-error" : ""}`}
+                    className={`ls-input${errorField === "username" ? " ls-input-error" : ""}`}
+                    aria-invalid={errorField === "username"}
                     type="text"
                     placeholder="Enter your username"
                     value={username}
@@ -515,7 +554,9 @@ export default function LoginScreen() {
                   <span className="ls-input-icon"><LockIcon /></span>
                   <input
                     id="qelcare-password"
-                    className="ls-input ls-input-pr"
+                    ref={passwordRef}
+                    className={`ls-input ls-input-pr${errorField === "password" ? " ls-input-error" : ""}`}
+                    aria-invalid={errorField === "password"}
                     type={showPass ? "text" : "password"}
                     placeholder="Enter your password"
                     value={password}
@@ -544,7 +585,7 @@ export default function LoginScreen() {
                     checked={rememberMe}
                     onChange={e => setRememberMe(e.target.checked)}
                   />
-                  <span className="ls-remember-label">Remember me</span>
+                  <span className="ls-remember-label">Remember username</span>
                 </label>
                 <button className="ls-link" onClick={() => navigate("/forgot-password")}>
                   Forgot password?
@@ -571,7 +612,7 @@ export default function LoginScreen() {
                   <button className="ls-patient-btn" onClick={() => navigate("/register")}>
                     <UserPlusIcon />New Patient
                   </button>
-                  <button className="ls-patient-btn" onClick={focusUsername}>
+                  <button className="ls-patient-btn" onClick={startExistingPatient}>
                     <UserIcon />Existing Patient
                   </button>
                 </div>
