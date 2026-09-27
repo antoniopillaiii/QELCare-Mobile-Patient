@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { authFetch, logout } from "../../utils/auth";
 import MainLayout from "../Layout/MainLayout";
 import { EmptyState, LoadingState } from "../Workflow/ClinicUi";
+import { ageFromBirthDate } from "../../utils/manilaDate";
 
 const blankForm = {
   username: "",
@@ -80,15 +81,10 @@ function initials(name) {
   return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
 
+// Age as of the clinic's day (Asia/Manila), whatever the phone's time zone.
 function ageFrom(dateOfBirth) {
-  if (!dateOfBirth) return "";
-  const birth = new Date(`${String(dateOfBirth).slice(0, 10)}T00:00:00`);
-  if (Number.isNaN(birth.getTime())) return "";
-  const today = new Date();
-  let age = today.getFullYear() - birth.getFullYear();
-  const monthDiff = today.getMonth() - birth.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) age -= 1;
-  return age >= 0 ? `${age} years old` : "";
+  const age = ageFromBirthDate(dateOfBirth);
+  return age !== null && age >= 0 ? `${age} years old` : "";
 }
 
 function makeForm(profile, patient) {

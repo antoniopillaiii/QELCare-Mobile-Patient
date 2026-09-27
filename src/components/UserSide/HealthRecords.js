@@ -13,6 +13,7 @@ import {
   inputStyle,
 } from "../Workflow/ClinicUi";
 import Pagination, { usePagination } from "../common/Pagination";
+import { manilaToday } from "../../utils/manilaDate";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
@@ -31,8 +32,9 @@ function compact(text) {
   return String(text || "").replace(/\s+/g, " ").trim();
 }
 
+// The clinic's current day (Manila), not the UTC date toISOString() would give.
 function todayISO() {
-  return new Date().toISOString().slice(0, 10);
+  return manilaToday();
 }
 
 async function renderPdfPageToImage(pdf, pageNumber) {
