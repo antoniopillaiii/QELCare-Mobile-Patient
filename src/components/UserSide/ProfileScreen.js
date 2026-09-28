@@ -232,7 +232,7 @@ export default function ProfileScreen() {
   const needsOtp = useMemo(() => changedContactFields(form, profile).length > 0, [form, profile]);
   const canSave = !saving && (!needsOtp || otpVerified);
   const statusValue = profile?.status || "unknown";
-  const statusOk = String(statusValue).toLowerCase() === "active";
+  const statusOk = String(statusValue).toLowerCase() === "verified";
   const hasPhoto = Boolean(profile?.profile_picture);
 
   function updateField(name, value) {
@@ -335,6 +335,10 @@ export default function ProfileScreen() {
 
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.message || "Failed to update profile.");
+      if (payload.changed === false) {
+        setMessage(payload.message || "No changes to save.");
+        return;
+      }
 
       const updatedProfile = payload.data || payload.profile || payload.user;
       setProfile(updatedProfile);
