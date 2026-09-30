@@ -50,89 +50,45 @@ closed. Until FCM is configured, the backend logs pushes to the server console.
 
 ---
 
-## 2. SMS notifications + SMS OTP codes — website & mobile
+## 2. SMS verification codes — Forgot Password + Register Account only
 
-SMS is sent server-side by a gateway. Real SMS to Philippine numbers always
-costs money at the carrier level, so the provider is pluggable and defaults to a
-**free** path.
+SMS is used for **one thing**: the 6-digit verification code for **Forgot
+Password** and **Register Account**. The website and the mobile app share the
+backend, so both get it. Nothing else sends SMS: appointment updates go by
+in-app notification, email and push, and profile-change codes go by email.
 
-### What's already done
-- `shared/utils/smsNotifier.js` — provider-agnostic sender with PH phone
-  normalization and a **console dev fallback** (prints the SMS instead of sending).
-- Appointment events also text the patient (`emailPatient` in
-  `appointmentController.js`) — web patients included.
-- **SMS OTP:** verification screens (web + mobile) have a **"Send code via SMS"**
-  button — ideal when email is slow on weak mobile data. The backend looks up the
-  account's phone; the user never types a number.
+### How it works
+- The code is emailed first. On the verification screen, after the 60-second
+  resend wait, **"Send code via SMS"** texts a new code to the mobile number on
+  the account. The patient never types a number there.
+- The text is sent **from the clinic's own Android phone and SIM** through
+  **TextBee** (<https://textbee.dev>). The backend (Railway) calls TextBee's API;
+  TextBee hands the message to the phone, which sends it from its SIM. No ADB,
+  no PC. The carrier cost is your SIM plan (use an unlimited-text promo).
+- TextBee's **free plan** allows **50 SMS a day and 300 a month** from **1 phone**.
+  Past that, the backend says "SMS is unavailable right now. Please use Resend by
+  email." and email keeps working.
+- The backend never logs the SMS text or the number. TextBee's dashboard keeps a
+  history of sent messages, so keep that account private.
 
-### Choosing a provider (backend `.env`)
-Default (free, no account — codes print to the **server console**):
+### Phone + account setup (one time)
+1. Create a free account at <https://textbee.dev> and verify its email.
+2. On the clinic phone, install the app from <https://textbee.dev/download>
+   (allow installs from your browser; Play Protect may ask you to confirm).
+3. Open the app and allow **SMS** access (and notifications).
+4. In the TextBee dashboard: **Register Device** → scan the QR code with the app.
+   Then create an **API key** in the dashboard.
+5. In the app, make sure the gateway is **enabled**. On a dual-SIM phone, set the
+   **Default SIM** to the SIM with the unli-text promo.
+6. Settings → Apps → TextBee → Battery → **Unrestricted**. Keep the phone
+   charged and on mobile data or Wi-Fi, and keep the promo active.
+
+### Backend variables (Railway → Variables; locally `qelcare-backend/.env`)
 ```
-SMS_PROVIDER=console
+SMS_PROVIDER=textbee
+TEXTBEE_API_KEY=<API key from the TextBee dashboard>
+# TEXTBEE_DEVICE_ID=<device id>              # optional, only with 2+ phones
+# TEXTBEE_SIM_SUBSCRIPTION_ID=<sim id>       # optional, pick the SIM per message
 ```
-
-**TextBelt** — a *real* SMS with **no account** on the free public quota
-(1 SMS/day), or free if you self-host:
-```
-SMS_PROVIDER=textbelt
-TEXTBELT_API_KEY=textbelt          # public free key = 1 SMS/day
-# TEXTBELT_URL=https://your-self-hosted-textbelt/text   # optional, unlimited & free if self-hosted
-```
-
-**Semaphore** (Philippine gateway — free signup credits, no credit card):
-```
-SMS_PROVIDER=semaphore
-SEMAPHORE_API_KEY=<your key>
-# SMS_SENDER=QELCare   # OPTIONAL — only if you've REGISTERED this sender name in
-                       # Semaphore. Leave it OUT to use Semaphore's default sender
-                       # (works immediately). An unregistered name makes sends fail.
-```
-
-**Twilio** (global; trial credits):
-```
-SMS_PROVIDER=twilio
-TWILIO_ACCOUNT_SID=<sid>
-TWILIO_AUTH_TOKEN=<token>
-TWILIO_FROM=<your Twilio number>
-```
-
-`SMS_DEV_FALLBACK=true` (default in non-production) means that if the gateway is
-unconfigured or a send fails, the code is logged to the server console so testing
-is never blocked.
-
-> **Honest note:** there is no unlimited free SMS gateway for PH numbers.
-> `console` and TextBelt's 1/day are perfect for demos/testing; sustained live
-> SMS (many OTPs, every appointment) needs a paid gateway (Semaphore recommended
-> locally).
-
-### "SMS service is not configured. Use email instead." — why you see this
-
-This is **expected**, not a bug. It appears when the backend has **no SMS gateway
-configured AND the console fallback is off** — which is exactly the case on the
-**production (Railway)** backend, because there `NODE_ENV=production` turns the
-dev console fallback off. Instead of silently pretending to send (the console
-fallback only prints to server logs, which a real user can't see), the backend
-honestly refuses and tells the user to use email.
-
-Getting past the phone check to this message also confirms the account **has a
-mobile number on file** (otherwise you'd see "No mobile number on file for SMS").
-
-**To make SMS actually deliver in production:** set an `SMS_PROVIDER` + its key in
-**Railway → Variables** (not the local `.env`), then redeploy. Recommended:
-Semaphore (`SMS_PROVIDER=semaphore` + `SEMAPHORE_API_KEY` + `SMS_SENDER`).
-
-> Where do the vars go? **Railway only** for the live site/app (both share the
-> Railway backend). The local `qelcare-backend/.env` is only for running the
-> backend on your own PC, and it's gitignored so it never reaches production.
-> Setting `SMS_DEV_FALLBACK=true` on Railway would make the button "succeed" and
-> log the code to the Railway logs — useful only for a controlled demo, never for
-> real users.
-
-### SMS appointment alerts are limited to key events
-
-To save gateway credits, appointment **SMS** is sent only for the key patient
-events — **confirm / cancel / reschedule** (`SMS_STATUSES` in
-`appointmentController.js` = CONFIRMED, IN_QUEUE, CANCELLED, RESCHEDULED; IN_QUEUE
-is the same-day-confirm variant). Booking (PENDING), NO_SHOW, and COMPLETED do
-**not** text. In-app notifications, email, and push still fire on every event
-(those are free).
+Redeploy after changing them. If SMS isn't configured, production says "SMS
+service is not configured. Use email instead." and email keeps working.
