@@ -80,8 +80,35 @@ in-app notification, email and push, and profile-change codes go by email.
    Then create an **API key** in the dashboard.
 5. In the app, make sure the gateway is **enabled**. On a dual-SIM phone, set the
    **Default SIM** to the SIM with the unli-text promo.
-6. Settings → Apps → TextBee → Battery → **Unrestricted**. Keep the phone
-   charged and on mobile data or Wi-Fi, and keep the promo active.
+6. Settings → Apps → TextBee → Battery → **Unrestricted**. On a Samsung, also add
+   TextBee to Settings → Battery → Background usage limits → **Never sleeping
+   apps**, so the phone doesn't put it to sleep.
+
+### Keeping the phone ready
+The phone does two jobs, and each needs something different:
+1. **Receive the send job — needs internet.** The backend gives the text to
+   TextBee's server, which passes it to the phone over the internet. With no
+   internet the phone never gets the job and the patient gets no code.
+2. **Send the SMS — needs the SIM.** The phone texts over the cell network using
+   the unli-text promo.
+
+So the phone needs **all** of these:
+- **Internet:** Wi-Fi or mobile data.
+- **Cell signal**, airplane mode off.
+- **An active unli-text promo.**
+- **Charged** — best kept plugged in.
+- **TextBee allowed in the background:** battery **Unrestricted** (and
+  **Never sleeping apps** on Samsung), and never force-closed.
+
+**Prefer Wi-Fi.** Unli-text promos usually cover texts only, so without a data
+promo, mobile data may be charged against the SIM's load. When the load runs out
+the phone goes offline and SMS stops. Use the clinic Wi-Fi, and add a data promo
+only if you want mobile data as a backup.
+
+**If the phone is offline,** "Send code via SMS" still says the code was sent,
+but no text arrives. The code expires after 10 minutes and the patient can use
+**Resend by email**. To check the phone is connected, open the TextBee dashboard
+and look at the device's last-seen time.
 
 ### Backend variables (Railway → Variables; locally `qelcare-backend/.env`)
 ```
