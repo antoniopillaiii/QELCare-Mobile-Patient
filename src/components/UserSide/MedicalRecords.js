@@ -15,6 +15,7 @@ import {
   todayISO,
 } from "../Workflow/ClinicUi";
 import Pagination, { usePagination } from "../common/Pagination";
+import { manilaDateOf } from "../../utils/manilaDate";
 
 const blankRecord = {
   patient_id: "",
@@ -342,8 +343,19 @@ export default function MedicalRecords({ appointment, latestVital, onCreated }) 
                     <div style={{ color: "#6b778c", fontSize: 13 }}>
                       {record.patient_name || "Patient"} - {record.doctor_name || "Doctor"} - {formatDate(record.visit_date || record.appointment_date)}
                     </div>
+                    {/* The doctor changed this record after the visit was paid: tell the patient, and when. */}
+                    {record.amended_at && (
+                      <div style={{ color: "#9a6500", fontSize: 12, fontWeight: 800, marginTop: 3 }}>
+                        Amended on {formatDate(manilaDateOf(record.amended_at))}
+                      </div>
+                    )}
                   </div>
-                  <StatusBadge status={record.appointment_status || "COMPLETED"} />
+                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    <StatusBadge status={record.appointment_status || "COMPLETED"} />
+                    {record.amended_at && (
+                      <span style={{ padding: "3px 9px", borderRadius: 999, background: "#fff4de", color: "#9a6500", fontSize: 11, fontWeight: 900 }}>Amended</span>
+                    )}
+                  </div>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 10 }}>
                   <RecordBlock label="Chief complaint" value={record.chief_complaint} />
